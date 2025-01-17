@@ -45,9 +45,8 @@ resource "aws_route_table_association" "subnet_b_assoc" {
 }
 
 #Créer une clé SSH
- resource "aws_key_pair" "my_key" {
-   key_name   = "my-terraform-key"
-   public_key = file("C:/Users/sk8ma/.ssh/id_rsa.pub") 
+ data "aws_key_pair" "my_key" {
+   key_name   = "vockey"
 }
 
 #Groupe de sécurité pour SSH
