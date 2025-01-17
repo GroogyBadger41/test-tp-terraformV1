@@ -1,12 +1,15 @@
 pipeline {
     agent any
-    // options {
-    //    // options
-    // }
+     options {
+        // options
+        ansiColor('xterm')
+    }
+     }
 
-    // parameters {
-    //    // Parameters
-    // }
+     parameters {
+        // Parameters
+        booleanParam(name: 'DESTROY', defaultValue: false, description: 'Destroy')
+     }
 
     environment {
         // environment variables
@@ -15,6 +18,9 @@ pipeline {
 
     stages {
         stage('iac:terraform plan') {
+            when {
+                expression { params.DESTROY == false }
+            }
             steps {
                 script {
                     sh '''
@@ -26,9 +32,47 @@ pipeline {
         }
 
         stage('confirm:deploy') {
+            when {
+                expression { params.DESTROY == false }
+            }
             steps {
                 input(id: 'confirm', message: """
-                    You choose to deploy:
+                    You choose to deploy:""")
+            }
+        }
+
+        stage('confirm:destroy') {
+            when {
+                expression { params.DESTROY == true }
+            }
+            steps {
+                input(id: 'confirm', message: """
+                    You choose to deploy:""")
+            }
+        }
+
+        stage('init:apply') {
+            when {
+                expression { params.DESTROY == false }
+            }
+            steps {
+                input(id: 'confirm', message: """
+                    You choose to deploy:""")
+            }
+        }
+
+        stage('destroy') {
+            when {
+                expression { params.DESTROY == true }
+            }
+            steps {
+                input(id: 'confirm', message: """
+                    You choose to deploy:""")
+            }
+        }
+        
+        
+                    
                     
 branch: ${env.GIT_BRANCH}
                   Do you confirm the deployment""")}}
